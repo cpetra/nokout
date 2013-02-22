@@ -1,0 +1,62 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides: nokout.sh
+# Required-Start:
+# Required-Stop:
+# Should-Start:
+# Should-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start and stop nokout.sh
+# Description: nokout (nokia output)
+### END INIT INFO
+
+NAME=nokout_daemon
+DAEMON=/usr/sbin/$NAME
+
+
+test -x $DAEMON || exit 0
+
+start () {
+    modprobe spi_bcm2708
+    start-stop-daemon --start "$1" --quiet --exec $DAEMON
+}
+
+stop () {
+    start-stop-daemon --stop --oknodo --exec $DAEMON
+    rmmod spi_bcm2708
+}
+
+case "$1" in
+start)
+    start
+    ;;
+
+start2)
+    start led_on
+    ;;
+
+stop)
+    stop
+    ;;
+
+restart)
+    stop
+    sleep 1
+    start
+    ;;
+
+restart2)
+    stop
+    sleep 1
+    start led_on
+    ;;
+
+*)
+    echo "Usage: $0 start|stop" >&2
+    exit 1
+    ;;
+esac
+
+exit 0
